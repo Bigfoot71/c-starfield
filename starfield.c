@@ -1,30 +1,27 @@
+#include "starfield.h"
+
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 /* STAR */
 
-typedef struct {
-  double x, y, z, pz;
-  int speed;
-} Star;
-
-Star Star_create(double x, double y, double z, int speed) {
+static Star Star_create(double x, double y, double z, int speed) {
     return (Star){ .x = x, .y = y, .z = z, .pz = z, .speed = speed };
 }
 
-
-void Star_update(Star *star, double dt) {
+static void Star_update(Star *star, double dt) {
     star->pz = star->z, star->z -= star->speed*dt;
 }
 
-int map(double value, double low1, double high1, double low2, double high2) {
+static int map(double value, double low1, double high1, double low2, double high2) {
     return (int)(low2 + (high2 - low2) * ((value - low1) / (high1 - low1)));
 }
 
-void Star_get(Star *star, int width, int height, int *x, int *y, int *r, int *px, int *py) {
+static void Star_get(Star *star, int width, int height, int *x, int *y, int *r, int *px, int *py) {
 
     *x = map(star->x / star->z, 0, 1, 0, width);
     *y = map(star->y / star->z, 0, 1, 0, height);
@@ -41,12 +38,6 @@ void Star_get(Star *star, int width, int height, int *x, int *y, int *r, int *px
 }
 
 /* STARIFIELD */
-
-typedef struct {
-    int numberOfStars;
-    int width, height;
-    Star *stars;
-} StarField;
 
 StarField StarField_create(int nStars, int win_w, int win_h) {
 
