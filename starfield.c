@@ -11,19 +11,13 @@ typedef struct {
   int speed;
 } Star;
 
-Star *Star_create(double x, double y, double z, int speed) {
-    Star *star = malloc(sizeof(Star));
-    star->x = x;
-    star->y = y;
-    star->z = z;
-    star->pz = z;
-    star->speed = speed;
-    return star;
+Star Star_create(double x, double y, double z, int speed) {
+    return (Star){ .x = x, .y = y, .z = z, .pz = z, .speed = speed };
 }
 
+
 void Star_update(Star *star, double dt) {
-    star->pz = star->z;
-    star->z -= star->speed*dt;
+    star->pz = star->z, star->z -= star->speed*dt;
 }
 
 int map(double value, double low1, double high1, double low2, double high2) {
@@ -51,16 +45,17 @@ void Star_get(Star *star, int width, int height, int *x, int *y, int *r, int *px
 typedef struct {
     int numberOfStars;
     int width, height;
-    Star **stars;
+    Star *stars;
 } StarField;
 
-StarField *StarField_create(int nStars, int win_w, int win_h) {
+StarField StarField_create(int nStars, int win_w, int win_h) {
 
-    StarField *starfield = malloc(sizeof(StarField));
-    starfield->numberOfStars = nStars;
-    starfield->width = win_w;
-    starfield->height = win_h;
-    starfield->stars = malloc(sizeof(Star*) * nStars);
+    StarField starfield = {0};
+
+    starfield.numberOfStars = nStars;
+    starfield.width = win_w;
+    starfield.height = win_h;
+    starfield.stars = (Star*)malloc(sizeof(Star) * nStars);
 
     srand(time(NULL));
     for (int i = 0; i < nStars; i++) {
@@ -68,7 +63,7 @@ StarField *StarField_create(int nStars, int win_w, int win_h) {
         double y = ((double)rand() / RAND_MAX) * win_h - (win_h/2.);
         double z = ((double)rand() / RAND_MAX) * win_w;
         int speed = rand() % 313 + 62;
-        starfield->stars[i] = Star_create(x, y, z, speed);
+        starfield.stars[i] = Star_create(x, y, z, speed);
     }
 
     return starfield;
@@ -79,15 +74,17 @@ void StarField_draw(StarField *starfield, SDL_Renderer *renderer, double dt) {
 
     for (int i = 0; i < starfield->numberOfStars; i++) {
 
-        Star *star = starfield->stars[i];
+        Star *star = &starfield->stars[i];
 
         if (star->z <= star->speed*dt) { // New star
+
             double x = ((double)rand() / RAND_MAX) * (starfield->width/2.) - (starfield->width/4.);
             double y = ((double)rand() / RAND_MAX) * starfield->height - (starfield->height/2.);
             double z = ((double)rand() / RAND_MAX) * starfield->width;
             int speed = rand() % 313 + 62;
-            free(star);
+
             starfield->stars[i] = Star_create(x, y, z, speed);
+
         } else {
 
             Star_update(star, dt);
@@ -112,9 +109,5 @@ void StarField_draw(StarField *starfield, SDL_Renderer *renderer, double dt) {
 }
 
 void StarField_free(StarField *starfield) {
-    for (int i = 0; i < starfield->numberOfStars; i++) {
-        free(starfield->stars[i]);
-    }
     free(starfield->stars);
-    free(starfield);
 }

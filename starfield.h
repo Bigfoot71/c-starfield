@@ -17,7 +17,7 @@ typedef struct Star {
     int speed;
 } Star;
 
-Star *Star_create(double x, double y, double z, int speed);
+Star Star_create(double x, double y, double z, int speed);
 void Star_update(Star *star, double dt);
 void Star_get(Star *star, int width, int height, int *x, int *y, int *r, int *px, int *py);
 
@@ -30,7 +30,7 @@ typedef struct StarField {
     Star **stars;
 } StarField;
 
-StarField *StarField_create(int nStars, int width, int height);
+StarField StarField_create(int nStars, int width, int height);
 void StarField_draw(StarField *starfield, SDL_Renderer *renderer, double dt);
 void StarField_free(StarField *starfield);
 

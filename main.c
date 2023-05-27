@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     /* Program init */
 
     int nStars = 500;
-    StarField *starfield = StarField_create(nStars, SCREEN_WIDTH, SCREEN_HEIGHT);
+    StarField starfield = StarField_create(nStars, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     bool quit = false;
     SDL_Event event;
@@ -76,14 +76,14 @@ int main(int argc, char *argv[]) {
         SDL_RenderClear(renderer);
 
         // Update and draw StarField
-        StarField_draw(starfield, renderer, deltaTime);
+        StarField_draw(&starfield, renderer, deltaTime);
 
         // Update screen
         SDL_RenderPresent(renderer);
 
     }
 
-    StarField_free(starfield);
+    StarField_free(&starfield);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
